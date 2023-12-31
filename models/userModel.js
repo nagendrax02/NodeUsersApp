@@ -1,6 +1,7 @@
 const { ObjectId } = require("mongodb");
 const connectToMongo = require("../db/dbConnection");
 const jwt = require("jsonwebtoken");
+const config = require('../config/config')
 
 
 
@@ -25,7 +26,7 @@ const loginUser=async(email, password)=>{
     const userList = db.collection("RegisteredUsers")
     const user = await userList.findOne({email,password});
     if(user){
-        const token = jwt.sign({ userId: user._id, email: user.email , username:user.username}, '&8n3m', {
+        const token = jwt.sign({ userId: user._id, email: user.email , username:user.username}, config.get('jwtSecret'), {
             expiresIn: '1h', // Token expiration time (adjust as needed)
           });
         return token
