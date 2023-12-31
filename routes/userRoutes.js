@@ -26,8 +26,10 @@ const handleUserRoute = (req, res) => {
   } else if (req.method === "GET" && req.url === "/users") {
     const token = req.headers.authorization;
     console.log("token--->", token);
-    verifyToken(token);
-    userControllers.fetchAllUsersController(req, res);
+    const isTokenValid = verifyToken(token,res);
+    if (isTokenValid) {
+      userControllers.fetchAllUsersController(req, res);
+    }
   } else {
     // Handle other routes
     res.writeHead(404, { "Content-Type": "text/plain" });
