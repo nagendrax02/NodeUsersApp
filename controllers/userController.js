@@ -1,10 +1,12 @@
 const connectToMongo = require("../db/dbConnection");
 const userModels = require("../models/userModel");
 
+require('dotenv').config()
+
 const isUserRegistered = async (res, email) => {
   // console.log('res email', res,email)
   const db = await connectToMongo();
-  const RegisteredUsers = db.collection("RegisteredUsers");
+  const RegisteredUsers = process.env.REGISTERED_USER_COLLECTION
   const isRegistered = await RegisteredUsers.findOne({ email });
   if (isRegistered) {
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -22,6 +24,7 @@ const isUserRegistered = async (res, email) => {
 
 async function createUserController(req, res) {
   const { username, email, password } = req.body;
+  console.log("REQ----->", req.body)
   try {
     const isRegistered = await isUserRegistered(res, email);
     console.log('is registered--->', isRegistered)
@@ -44,8 +47,11 @@ async function createUserController(req, res) {
 
 const loginUserController = async (req, res) => {
   const { email, password } = req.body;
+  console.log('email, password', email,password)
   try {
     const user = await userModels.loginUser(email, password);
+
+    console.log('user--->', user)
     if (user) {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(
@@ -56,6 +62,15 @@ const loginUserController = async (req, res) => {
         })
       );
       return
+    }
+    if(!email){
+      res.writeHead(400, {"Content-Type":"application/json"})
+      res.end(JSON.stringify({StatusCode:400, message:"Email is required"}))
+      return
+    }
+    if(!password){
+      res.writeHead(400, {"Content-Type":"application/json"});
+      res.end(JSON.stringify({statusCode:400, message:'Password Required'}))
     }
     res.writeHead(401,{"Content-Type":"application/json"})
     res.end(JSON.stringify({statusCode:401, message:"Invalid email or password"}))

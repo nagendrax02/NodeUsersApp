@@ -2,6 +2,7 @@ const userControllers = require("../controllers/userController");
 const { verifyToken } = require("../utils/verifyToken");
 
 const handleUserRoute = (req, res) => {
+  console.log('req---->', req)
   if (req.method === "POST" && req.url === "/register") {
     let data = "";
     req.on("data", (chunk) => {
